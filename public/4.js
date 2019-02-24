@@ -620,13 +620,17 @@ exports.default = {
       this.page.loading = true;
 
       this.$store.dispatch('calculatePaymentPlan', this.plan.debtCelerator).then(function (response) {
+        _this2.plan.initialBalance = response.data.payment_plan.combined.total_initial_debt_balance;
+        _this2.plan.currentBalance = response.data.payment_plan.combined.total_current_debt_balance;
+        _this2.plan.debtSchedule = response.data.payment_plan.combined.billing_dates;
+        _this2.plan.debtScheduleOriginal = response.data.no_payment_plan.combined.billing_dates;
+        _this2.plan.debtCelerator = response.data.payment_plan.combined.debtcelerator;
         _this2.plan.startDate = response.data.payment_plan.combined.start_date;
         _this2.plan.estimatedEndDate = response.data.payment_plan.combined.finish_date;
         _this2.plan.interestSaved = response.data.no_payment_plan.combined.total_interest_paid - response.data.payment_plan.combined.total_interest_paid;
         _this2.plan.debtCount = response.data.payment_plan.combined.total_debts;
-        _this2.plan.totalDebtBalance = response.data.payment_plan.combined.total_debt_balance;
-        _this2.plan.debtSchedule = response.data.payment_plan.combined.billing_dates;
-        _this2.plan.debtScheduleOriginal = response.data.no_payment_plan.combined.billing_dates;
+        _this2.plan.totalDebtBalance = response.data.payment_plan.combined.total_current_debt_balance;
+        console.log('what?');
         _this2.page.showPaymentPlan = true;
         _this2.page.loading = false;
       }).catch(function (error) {
@@ -2463,19 +2467,6 @@ var render = function() {
               "div",
               { staticClass: "col" },
               [
-                _c(
-                  "b-card",
-                  {
-                    staticClass: "mb-4",
-                    attrs: { header: "Description", "header-tag": "h6" }
-                  },
-                  [
-                    _c("div", {
-                      domProps: { innerHTML: _vm._s(_vm.plan.description) }
-                    })
-                  ]
-                ),
-                _vm._v(" "),
                 _c(
                   "b-tabs",
                   { staticClass: "nav-tabs-top mb-4" },

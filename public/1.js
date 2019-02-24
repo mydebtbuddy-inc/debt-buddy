@@ -295,7 +295,7 @@ var _validators = __webpack_require__("./node_modules/vuelidate/lib/validators/i
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var debtTypeOptions = ['Mortgage', 'Student Loan', 'Auto Loan', 'Credit Card'];
+var debtTypeOptions = ['Mortgage', 'Student Loan', 'Auto Loan', 'Credit Card', 'Utilities'];
 
 var paymentPeriodOptions = [{ value: 'A', display: 'Annually' }, { value: 'M', display: 'Monthly' }, { value: 'W', display: 'Weekly' }, { value: 'D', display: 'Daily' }];
 
@@ -600,6 +600,9 @@ exports.default = {
             selected: false
           },
           'Credit Cards': {
+            selected: false
+          },
+          'Utilities': {
             selected: false
           }
         }

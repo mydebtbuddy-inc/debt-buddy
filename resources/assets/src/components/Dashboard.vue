@@ -1,7 +1,7 @@
 <template>
   <div>
     <h4 class="media align-items-center font-weight-bold py-3 mb-4">
-      <img :src="`${baseUrl}img/avatars/adrien.png`" alt="" class="ui-w-50 rounded-circle">
+      <img :src="`${baseUrl}img/avatars/user_default.png`" alt="" class="ui-w-50 rounded-circle">
       <div class="media-body ml-3">
         Welcome back, {{ userName }}!
         <div class="text-muted text-tiny mt-1"><small class="font-weight-normal">Today is {{ date }}</small></div>

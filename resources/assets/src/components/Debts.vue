@@ -170,6 +170,9 @@ export default {
         },
         'Credit Cards': {
           selected: false
+        },
+        'Utilities': {
+          selected: false
         }
       }
     },

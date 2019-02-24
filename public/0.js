@@ -32278,7 +32278,10 @@ var render = function() {
         [
           _c("img", {
             staticClass: "ui-w-50 rounded-circle",
-            attrs: { src: _vm.baseUrl + "img/avatars/adrien.png", alt: "" }
+            attrs: {
+              src: _vm.baseUrl + "img/avatars/user_default.png",
+              alt: ""
+            }
           }),
           _vm._v(" "),
           _c("div", { staticClass: "media-body ml-3" }, [

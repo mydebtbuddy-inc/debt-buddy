@@ -51,9 +51,9 @@
       <div class="col">
 
         <!-- Description -->
-        <b-card header="Description" header-tag="h6" class="mb-4">
+        <!--<b-card header="Description" header-tag="h6" class="mb-4">
           <div v-html="plan.description"></div>
-        </b-card>
+        </b-card>-->
         <!-- / Description -->
 
         <!-- Attached files -->
@@ -557,15 +557,19 @@ export default {
       this.page.loading = true
 
       this.$store.dispatch('calculatePaymentPlan', this.plan.debtCelerator)
-        .then(response => {
+        .then((response) => {
+          this.plan.initialBalance = response.data.payment_plan.combined.total_initial_debt_balance
+          this.plan.currentBalance = response.data.payment_plan.combined.total_current_debt_balance
+          this.plan.debtSchedule = response.data.payment_plan.combined.billing_dates
+          this.plan.debtScheduleOriginal = response.data.no_payment_plan.combined.billing_dates
+          this.plan.debtCelerator = response.data.payment_plan.combined.debtcelerator;
           this.plan.startDate = response.data.payment_plan.combined.start_date;
           this.plan.estimatedEndDate = response.data.payment_plan.combined.finish_date;
           this.plan.interestSaved = response.data.no_payment_plan.combined.total_interest_paid - response.data.payment_plan.combined.total_interest_paid;
           this.plan.debtCount = response.data.payment_plan.combined.total_debts;
-          this.plan.totalDebtBalance = response.data.payment_plan.combined.total_debt_balance;
-          this.plan.debtSchedule = response.data.payment_plan.combined.billing_dates;
-          this.plan.debtScheduleOriginal = response.data.no_payment_plan.combined.billing_dates;
-          this.page.showPaymentPlan = true;
+          this.plan.totalDebtBalance = response.data.payment_plan.combined.total_current_debt_balance;
+          console.log('what?')
+          this.page.showPaymentPlan = true
           this.page.loading = false
         })
         .catch(error => {

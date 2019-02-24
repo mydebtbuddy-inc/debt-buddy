@@ -272,7 +272,7 @@ import { FormWizard, TabContent, WizardStep } from 'vue-form-wizard'
 import { required, minLength, maxLength, requiredIf } from 'vuelidate/lib/validators'
 
 const debtTypeOptions = [
-  'Mortgage', 'Student Loan', 'Auto Loan', 'Credit Card'
+  'Mortgage', 'Student Loan', 'Auto Loan', 'Credit Card', 'Utilities'
 ]
 
 const paymentPeriodOptions = [
