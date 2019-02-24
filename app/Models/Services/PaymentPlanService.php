@@ -12,34 +12,39 @@ use App\Models\Entities\Eloquent\InterestRate;
 
 class PaymentPlanService
 {
-    /**
-     * Creates new debt along with associated interest rate and lender
-     *
-     * @param  int    $userID
-     * @param  float  $debtCelerator
-     */
-    public function generatePaymentPlan($userID, $debtCelerator)
-    {
+	/**
+	 * Creates new debt along with associated interest rate and lender
+	 *
+	 * @param  int    $userID
+	 * @param  float  $debtCelerator
+	 */
+	public function generatePaymentPlan($userID, $debtCelerator)
+	{
 		$plan = array(
 			'individual' => array(
 				'total_interest_paid' => 0.0
 			),
 			'combined' => array(
-				'total_interest_paid' => 0.0
+				'total_interest_paid' => 0.0,
+				'debtcelerator' => $debtCelerator
 			)
 		);
 
 		$allBillings = array();
 
 		$debts = Debt::where('user_id', $userID)->with([
-			'interestRates' => function ($query) {
-				$query->latest('from');
-				//$query->limit(1);
-			}
-		])->get()->sortBy('current_balance');
+				'interestRates' => function ($query) {
+					$query->latest('from');
+					//$query->limit(1);
+				}
+			])
+			->where('status', '!=', 'Removed')
+			->get()
+			->sortBy('current_balance');
 
 		$plan['combined']['total_debts'] = $debts->count();
-		$plan['combined']['total_debt_balance'] = $debts->sum('current_balance');
+		$plan['combined']['total_current_debt_balance'] = $debts->sum('current_balance');
+		$plan['combined']['total_initial_debt_balance'] = $debts->sum('initial_balance');
 
 		$debtCeleratorStartDate = Carbon::createFromDate(1900, 1, 1);
 
@@ -74,18 +79,18 @@ class PaymentPlanService
 		$plan['combined']['finish_date'] = array_values(array_slice($allBillings, -1))[0]['payment_date_formatted'];
 		$plan['combined']['billing_dates'] = $allBillings;
 
-        return $plan;
+  	return $plan;
 	}
 	
 
 	/**
-     * Creates new debt along with associated interest rate and lender
-     *
-     * @param  int    $userID
-     * @param  float  $debtCelerator
-     */
-    public function generateNoPaymentPlan($userID)
-    {
+	 * Creates new debt along with associated interest rate and lender
+	 *
+	 * @param  int    $userID
+	 * @param  float  $debtCelerator
+	 */
+  public function generateNoPaymentPlan($userID)
+  {
 		$plan = array(
 			'individual' => array(
 				'total_interest_paid' => 0.0
@@ -96,11 +101,14 @@ class PaymentPlanService
 		);
 
 		$debts = Debt::where('user_id', $userID)->with([
-			'interestRates' => function ($query) {
-				$query->latest('from');
-				//$query->limit(1);
-			}
-		])->get()->sortBy('current_balance');
+				'interestRates' => function ($query) {
+					$query->latest('from');
+					//$query->limit(1);
+				}
+			])
+			->where('status', '!=', 'Removed')
+			->get()
+			->sortBy('current_balance');
 
 		$allBillings = array();
 
@@ -135,7 +143,7 @@ class PaymentPlanService
 		$plan['combined']['finish_date'] = array_values(array_slice($allBillings, -1))[0]['payment_date_formatted'];
 		$plan['combined']['billing_dates'] = $allBillings;
 
-        return $plan;
+    return $plan;
 	}
 	
 	private function calculateMortgageSchedule($debt, &$debtCelerator = NULL, &$debtCeleratorDate = NULL) 
@@ -232,17 +240,17 @@ class PaymentPlanService
 		return $billings;
 	}
 
-    /**
-     * Generates list of billing dates.
-	 *
-	 * @param string    $payPeriod
-	 * @param string    $from
-     * @param string    $to
-     * @param int       $limit
-	 * @return string[]
-     */
-    private function nextBillingDate($date, $billingPeriod) 
-    {
+	/**
+  	* Generates list of billing dates.
+		*
+		* @param string    $payPeriod
+	 	* @param string    $from
+    * @param string    $to
+  	* @param int       $limit
+		* @return string[]
+    */
+	private function nextBillingDate($date, $billingPeriod) 
+	{
 		list($year, $month, $day) = explode('-', $date);
 		$startDate = Carbon::createFromDate($year, $month, $day);
 		
@@ -263,5 +271,5 @@ class PaymentPlanService
 				// Annually-billed 
 				return $startDate->addYears($periodInterval);
 		}
-    }
+  }
 }

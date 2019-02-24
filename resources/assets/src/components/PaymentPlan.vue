@@ -15,10 +15,10 @@
         <div class="col-md-9">
           <div class="media-body container-p-x py-4">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <div><strong class="text-primary text-large">{{completedPercent(projectData.tasks, projectData.completedTasks)}}%</strong> completed</div>
-              <div class="text-muted small">{{projectData.tasks - projectData.completedTasks}} opened tasks, {{projectData.completedTasks}} tasks completed</div>
+              <div><strong class="text-primary text-large">{{ completedPercent(plan.initialBalance, plan.currentBalance) }}%</strong> completed</div>
+              <div class="text-muted small">{{ plan.remainingPayments }} payments remaining</div>
             </div>
-            <b-progress :value="completedPercent(projectData.tasks, projectData.completedTasks)" height="4px" />
+            <b-progress :value="completedPercent(plan.initialBalance, plan.currentBalance)" height="4px" />
           </div>
         </div>
         <div class="col-md-3">
@@ -52,7 +52,7 @@
 
         <!-- Description -->
         <b-card header="Description" header-tag="h6" class="mb-4">
-          <div v-html="projectData.description"></div>
+          <div v-html="plan.description"></div>
         </b-card>
         <!-- / Description -->
 
@@ -137,7 +137,7 @@
 
             </b-card-body>
           </b-tab>
-          <b-tab title="Activity">
+          <!--<b-tab title="Activity">
             <b-card-body>
 
               <div v-for="activity in projectData.activities" :key="activity.type + activity.date + activity.user.name" class="media pb-1 mb-3">
@@ -160,7 +160,7 @@
               </div>
 
             </b-card-body>
-          </b-tab>
+          </b-tab>-->
         </b-tabs>
         <!-- / Tabs -->
 
@@ -311,14 +311,23 @@ export default {
       var plan = this.$store.getters.plan
       
       if (plan) {
-        this.debtSchedule = plan.payment_plan.combined.billing_dates
-        this.debtScheduleOriginal = plan.no_payment_plan.combined.billing_dates
+        this.plan.initialBalance = plan.payment_plan.combined.total_initial_debt_balance
+        this.plan.currentBalance = plan.payment_plan.combined.total_current_debt_balance
+        this.plan.debtSchedule = plan.payment_plan.combined.billing_dates
+        this.plan.debtScheduleOriginal = plan.no_payment_plan.combined.billing_dates
+        this.plan.debtCelerator = plan.payment_plan.combined.debtcelerator;
         this.plan.startDate = plan.payment_plan.combined.start_date;
         this.plan.estimatedEndDate = plan.payment_plan.combined.finish_date;
         this.plan.interestSaved = plan.no_payment_plan.combined.total_interest_paid - plan.payment_plan.combined.total_interest_paid;
         this.plan.debtCount = plan.payment_plan.combined.total_debts;
-        this.plan.totalDebtBalance = plan.payment_plan.combined.total_debt_balance;
+        this.plan.totalDebtBalance = plan.payment_plan.combined.total_current_debt_balance;
         this.page.showPaymentPlan = true
+
+        const today = new Date()
+
+        this.plan.remainingPayments = plan.payment_plan.combined.billing_dates.filter((dates) => {
+            return Date.parse(dates.payment_date) > today;
+        }).length;
       }
     }, 500);
   },
@@ -336,8 +345,14 @@ export default {
       showPaymentPlan: false,
     },
     plan: {
+      description: `
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque magna augue, euismod at tortor et, laoreet maximus risus. Ut neque felis, luctus ut rhoncus id, elementum vitae lorem. Ut ac turpis sit amet lorem volutpat tincidunt. Vestibulum dui sapien, porttitor eget pellentesque id, ultrices id ipsum. Nam augue mi, maximus ut tortor et, fermentum efficitur diam. Suspendisse eget urna lorem. Fusce ligula augue, malesuada ullamcorper est nec, commodo laoreet tellus.</p>
+      <p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque pharetra turpis non aliquet ornare. Duis euismod ultricies est sed auctor. Sed luctus accumsan enim ut efficitur.</p>
+      `,
       debtCount: 0,
       totalDebtBalance: 0.0,
+      initialBalance: 0.0, 
+      currentBalance: 0.0,
       debtCelerator: null,
       dateCreated: "TBD",
       estimatedEndDate: "TBD",
@@ -571,8 +586,8 @@ export default {
 
       this.unblockPage()
     },
-    completedPercent (tasks, completed) {
-      return Math.round((completed / tasks) * 100)
+    completedPercent (total, paid) {
+      return Math.round(((total - paid) / total) * 100)
     },
     isImage (file) {
       return /\.jpg$|\.png$|\.gif$/i.test(file.name)

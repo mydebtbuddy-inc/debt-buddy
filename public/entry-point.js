@@ -55775,6 +55775,22 @@ var store = exports.store = new _vuex2.default.Store({
         addDebt: function addDebt(state, debt) {
             state.user.debts.push(debt);
         },
+        removeDebt: function removeDebt(state, debtID) {
+            var debts = state.user.debts.filter(function (debt) {
+                return debt.id !== debtID;
+            });
+
+            state.user.debts = debts;
+
+            state.user.debts.forEach(function (debt, index, debts) {
+                if (plan.payment_plan.individual[debt.id]) {
+                    debts[index]['payment_plan'] = null;
+                    debts[index]['no_payment_plan'] = null;
+                }
+            });
+
+            state.user.paymentPlan = null;
+        },
         clearDebts: function clearDebts(state) {
             state.user.debts = [];
         },
@@ -55784,6 +55800,7 @@ var store = exports.store = new _vuex2.default.Store({
             state.user.debts.forEach(function (debt, index, debts) {
                 if (plan.payment_plan.individual[debt.id]) {
                     debts[index]['payment_plan'] = plan.payment_plan.individual[debt.id];
+                    debts[index]['no_payment_plan'] = plan.no_payment_plan.individual[debt.id];
                 }
             });
         }
@@ -55867,6 +55884,22 @@ var store = exports.store = new _vuex2.default.Store({
                     _axios2.default.post('/user/debt', debtData).then(function (response) {
                         context.commit('addDebt', response.data);
                         resolve(response.data);
+                    }).catch(function (error) {
+                        reject(error);
+                    });
+                } else {
+                    reject('User not logged in');
+                }
+            });
+        },
+        removeDebt: function removeDebt(context, debtID) {
+            return new Promise(function (resolve, reject) {
+                if (context.getters.loggedIn) {
+                    _axios2.default.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token;
+
+                    _axios2.default.delete('/user/debt/' + debtID).then(function (response) {
+                        context.commit('removeDebt', response.data.id);
+                        resolve();
                     }).catch(function (error) {
                         reject(error);
                     });

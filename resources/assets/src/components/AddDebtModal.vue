@@ -63,22 +63,36 @@
             </b-form-row>
             <b-form-row>
               <b-form-group 
-                label="Principal Balance" 
-                class="col-md-6 mb-3" 
-                :feedback="formValidation.debt.messages.balance" 
-                :state="(formValidation.debt.enabled && $v.form.debt.balance.$invalid) ? 'invalid' : 'null'">
+                label="Starting Balance" 
+                class="col-md-4 mb-3" 
+                :feedback="formValidation.debt.messages.startBalance" 
+                :state="(formValidation.debt.enabled && $v.form.debt.startBalance.$invalid) ? 'invalid' : 'null'">
                 <b-input-group prepend="$">
                   <b-form-input 
-                    placeholder="Principal debt balance"
-                    v-model.trim="form.debt.balance" 
+                    placeholder="Starting debt balance"
+                    v-model.trim="form.debt.startBalance" 
                     :formatter="moneyFormat"
                     lazy-formatter 
-                    :state="(formValidation.debt.enabled && $v.form.debt.balance.$invalid) ? 'invalid' : 'null'" />
+                    :state="(formValidation.debt.enabled && $v.form.debt.startBalance.$invalid) ? 'invalid' : 'null'" />
+                </b-input-group>
+              </b-form-group>
+              <b-form-group 
+                label="Current Balance" 
+                class="col-md-4 mb-3" 
+                :feedback="formValidation.debt.messages.currentBalance" 
+                :state="(formValidation.debt.enabled && $v.form.debt.currentBalance.$invalid) ? 'invalid' : 'null'">
+                <b-input-group prepend="$">
+                  <b-form-input 
+                    placeholder="Current debt balance"
+                    v-model.trim="form.debt.currentBalance" 
+                    :formatter="moneyFormat"
+                    lazy-formatter 
+                    :state="(formValidation.debt.enabled && $v.form.debt.currentBalance.$invalid) ? 'invalid' : 'null'" />
                 </b-input-group>
               </b-form-group>
               <b-form-group 
                 label="Minimum Payment Amount" 
-                class="col-md-6 mb-3" 
+                class="col-md-4 mb-3" 
                 :feedback="formValidation.debt.messages.minPayment"
                 :state="(formValidation.debt.enabled && $v.form.debt.minPayment.$invalid) ? 'invalid' : 'null'">
                 <b-input-group prepend="$">
@@ -189,8 +203,7 @@
               <b-form-group label="Address Line 2" class="col mb-3">
                 <b-input 
                   placeholder="Lender's address (line 2)" 
-                  v-model="form.lender.address2"
-                  :state="(formValidation.lender.enabled && $v.form.lender.address2.$invalid) ? 'invalid' : 'null'" />
+                  v-model="form.lender.address2" />
               </b-form-group>
             </b-form-row>
             <b-form-row class="mt-3">
@@ -386,7 +399,8 @@ export default {
           maxLength: maxLength(128)
         },
         type: { required },
-        balance: { required },
+        startBalance: { required },
+        currentBalance: { required },
         minPayment: { required },
         startDate: { required },
         dayToBill: { required },
@@ -420,7 +434,8 @@ export default {
       debt: {
         name: null,
         type: null,
-        balance: null, 
+        startBalance: null,
+        currentBalance: null, 
         minPayment: null, 
         startDate: moment().toDate(),
         dayToBill: null
@@ -447,7 +462,8 @@ export default {
         messages: {
           name: '',
           type: '',
-          balance: '',
+          startBalance: '',
+          currentBalance: '',
           minPayment: '',
           startDate: '',
           dayToBill: ''
@@ -482,7 +498,8 @@ export default {
     addDebt: function(event) {
       var form = this.clone(this.form)
 
-      form['debt']['balance'] = parseFloat(form['debt']['balance'].replace(/[^0-9.]/g, '')).toFixed(2)
+      form['debt']['startBalance'] = parseFloat(form['debt']['startBalance'].replace(/[^0-9.]/g, '')).toFixed(2)
+      form['debt']['currentBalance'] = parseFloat(form['debt']['currentBalance'].replace(/[^0-9.]/g, '')).toFixed(2)
       form['debt']['minPayment'] = parseFloat(form['debt']['minPayment'].replace(/[^0-9.]/g, '')).toFixed(2)
       form['debt']['startDate'] = this.formattedDate(form['debt']['startDate'])
       form['debt']['payPeriod'] = this.formattedPaymentPeriod()

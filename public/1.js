@@ -263,6 +263,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 var _moment = __webpack_require__("./node_modules/moment/moment.js");
 
@@ -310,7 +323,8 @@ exports.default = {
           maxLength: (0, _validators.maxLength)(128)
         },
         type: { required: _validators.required },
-        balance: { required: _validators.required },
+        startBalance: { required: _validators.required },
+        currentBalance: { required: _validators.required },
         minPayment: { required: _validators.required },
         startDate: { required: _validators.required },
         dayToBill: { required: _validators.required }
@@ -345,7 +359,8 @@ exports.default = {
         debt: {
           name: null,
           type: null,
-          balance: null,
+          startBalance: null,
+          currentBalance: null,
           minPayment: null,
           startDate: (0, _moment2.default)().toDate(),
           dayToBill: null
@@ -372,7 +387,8 @@ exports.default = {
           messages: {
             name: '',
             type: '',
-            balance: '',
+            startBalance: '',
+            currentBalance: '',
             minPayment: '',
             startDate: '',
             dayToBill: ''
@@ -410,7 +426,8 @@ exports.default = {
 
       var form = this.clone(this.form);
 
-      form['debt']['balance'] = parseFloat(form['debt']['balance'].replace(/[^0-9.]/g, '')).toFixed(2);
+      form['debt']['startBalance'] = parseFloat(form['debt']['startBalance'].replace(/[^0-9.]/g, '')).toFixed(2);
+      form['debt']['currentBalance'] = parseFloat(form['debt']['currentBalance'].replace(/[^0-9.]/g, '')).toFixed(2);
       form['debt']['minPayment'] = parseFloat(form['debt']['minPayment'].replace(/[^0-9.]/g, '')).toFixed(2);
       form['debt']['startDate'] = this.formattedDate(form['debt']['startDate']);
       form['debt']['payPeriod'] = this.formattedPaymentPeriod();
@@ -619,6 +636,20 @@ exports.default = {
 
       return 0;
     },
+    remainingPayments: function remainingPayments(debt) {
+      var today = new Date();
+
+      var remainingPayments = debt.payment_plan.billing_dates.filter(function (dates) {
+        return Date.parse(dates.payment_date) > today;
+      });
+
+      return remainingPayments.length;
+    },
+    removeDebt: function removeDebt(debtID) {
+      this.$store.dispatch('removeDebt', debtID).then(function (response) {}).catch(function (error) {
+        console.log(error);
+      });
+    },
     setFilterDebtType: function setFilterDebtType(type) {
       var _this2 = this;
 
@@ -713,8 +744,6 @@ exports.default = {
     }
   }
 }; //
-//
-//
 //
 //
 //
@@ -17898,14 +17927,14 @@ var render = function() {
                           _c(
                             "b-form-group",
                             {
-                              staticClass: "col-md-6 mb-3",
+                              staticClass: "col-md-4 mb-3",
                               attrs: {
-                                label: "Principal Balance",
+                                label: "Starting Balance",
                                 feedback:
-                                  _vm.formValidation.debt.messages.balance,
+                                  _vm.formValidation.debt.messages.startBalance,
                                 state:
                                   _vm.formValidation.debt.enabled &&
-                                  _vm.$v.form.debt.balance.$invalid
+                                  _vm.$v.form.debt.startBalance.$invalid
                                     ? "invalid"
                                     : "null"
                               }
@@ -17917,27 +17946,27 @@ var render = function() {
                                 [
                                   _c("b-form-input", {
                                     attrs: {
-                                      placeholder: "Principal debt balance",
+                                      placeholder: "Starting debt balance",
                                       formatter: _vm.moneyFormat,
                                       "lazy-formatter": "",
                                       state:
                                         _vm.formValidation.debt.enabled &&
-                                        _vm.$v.form.debt.balance.$invalid
+                                        _vm.$v.form.debt.startBalance.$invalid
                                           ? "invalid"
                                           : "null"
                                     },
                                     model: {
-                                      value: _vm.form.debt.balance,
+                                      value: _vm.form.debt.startBalance,
                                       callback: function($$v) {
                                         _vm.$set(
                                           _vm.form.debt,
-                                          "balance",
+                                          "startBalance",
                                           typeof $$v === "string"
                                             ? $$v.trim()
                                             : $$v
                                         )
                                       },
-                                      expression: "form.debt.balance"
+                                      expression: "form.debt.startBalance"
                                     }
                                   })
                                 ],
@@ -17950,7 +17979,60 @@ var render = function() {
                           _c(
                             "b-form-group",
                             {
-                              staticClass: "col-md-6 mb-3",
+                              staticClass: "col-md-4 mb-3",
+                              attrs: {
+                                label: "Current Balance",
+                                feedback:
+                                  _vm.formValidation.debt.messages
+                                    .currentBalance,
+                                state:
+                                  _vm.formValidation.debt.enabled &&
+                                  _vm.$v.form.debt.currentBalance.$invalid
+                                    ? "invalid"
+                                    : "null"
+                              }
+                            },
+                            [
+                              _c(
+                                "b-input-group",
+                                { attrs: { prepend: "$" } },
+                                [
+                                  _c("b-form-input", {
+                                    attrs: {
+                                      placeholder: "Current debt balance",
+                                      formatter: _vm.moneyFormat,
+                                      "lazy-formatter": "",
+                                      state:
+                                        _vm.formValidation.debt.enabled &&
+                                        _vm.$v.form.debt.currentBalance.$invalid
+                                          ? "invalid"
+                                          : "null"
+                                    },
+                                    model: {
+                                      value: _vm.form.debt.currentBalance,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.form.debt,
+                                          "currentBalance",
+                                          typeof $$v === "string"
+                                            ? $$v.trim()
+                                            : $$v
+                                        )
+                                      },
+                                      expression: "form.debt.currentBalance"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "b-form-group",
+                            {
+                              staticClass: "col-md-4 mb-3",
                               attrs: {
                                 label: "Minimum Payment Amount",
                                 feedback:
@@ -18381,12 +18463,7 @@ var render = function() {
                             [
                               _c("b-input", {
                                 attrs: {
-                                  placeholder: "Lender's address (line 2)",
-                                  state:
-                                    _vm.formValidation.lender.enabled &&
-                                    _vm.$v.form.lender.address2.$invalid
-                                      ? "invalid"
-                                      : "null"
+                                  placeholder: "Lender's address (line 2)"
                                 },
                                 model: {
                                   value: _vm.form.lender.address2,
@@ -18742,8 +18819,40 @@ var render = function() {
                         _c("div", { staticClass: "text-muted small mt-1" }, [
                           _vm._v(_vm._s(debt.type))
                         ])
-                      ])
-                    ]
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "b-dropdown",
+                        {
+                          attrs: {
+                            variant:
+                              "default icon-btn borderless btn-round md-btn-flat hide-arrow",
+                            size: "sm",
+                            right: !_vm.isRTL
+                          }
+                        },
+                        [
+                          _c("template", { slot: "button-content" }, [
+                            _c("i", { staticClass: "ion ion-ios-more" })
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "b-dropdown-item",
+                            {
+                              attrs: { href: "javascript:void(0)" },
+                              on: {
+                                click: function($event) {
+                                  _vm.removeDebt(debt.id)
+                                }
+                              }
+                            },
+                            [_vm._v("Remove")]
+                          )
+                        ],
+                        2
+                      )
+                    ],
+                    1
                   ),
                   _vm._v(" "),
                   _c("b-progress", {
@@ -18762,8 +18871,25 @@ var render = function() {
                   _vm._v(" "),
                   _c("b-card-body", { staticClass: "pb-3" }, [
                     !_vm.paymentPlan
-                      ? _c("span", [_vm._v("No payment plan found")])
-                      : _c("span", [
+                      ? _c(
+                          "p",
+                          { staticClass: "text-center" },
+                          [
+                            _vm._v("\n            No payment plan found."),
+                            _c("br"),
+                            _vm._v(" "),
+                            _c(
+                              "router-link",
+                              { attrs: { to: "/payment-plan" } },
+                              [_vm._v("Start a debt payment plan")]
+                            ),
+                            _vm._v(
+                              " to see your potential savings.\n          "
+                            )
+                          ],
+                          1
+                        )
+                      : _c("p", [
                           _vm._v(
                             "Paid on the " +
                               _vm._s(_vm.formatBillDay(debt.payment_period)) +
@@ -18807,73 +18933,55 @@ var render = function() {
                           _vm._v(_vm._s(_vm.formatMoney(debt.current_balance)))
                         ])
                       ])
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _vm.paymentPlan
-                    ? _c(
-                        "span",
-                        [
-                          _c("hr", { staticClass: "m-0" }),
-                          _vm._v(" "),
-                          _c(
-                            "b-card",
-                            { attrs: { "no-body": "" } },
-                            [
-                              _c(
-                                "b-card-header",
-                                { staticClass: "text-center" },
-                                [
-                                  _c(
-                                    "a",
-                                    {
-                                      directives: [
-                                        {
-                                          name: "b-toggle",
-                                          rawName: "v-b-toggle.accordion2-1",
-                                          modifiers: { "accordion2-1": true }
-                                        }
-                                      ],
-                                      staticClass:
-                                        "d-flex justify-content-between text-dark",
-                                      attrs: { href: "javascript:void(0)" }
-                                    },
-                                    [
-                                      _vm._v(
-                                        "\n                Payment Plan Savings\n                "
-                                      ),
-                                      _c("div", {
-                                        staticClass: "collapse-icon"
-                                      })
-                                    ]
+                    ]),
+                    _vm._v(" "),
+                    _vm.paymentPlan
+                      ? _c("div", { staticClass: "row mt-3" }, [
+                          _c("div", { staticClass: "col" }, [
+                            _c("div", { staticClass: "text-muted small" }, [
+                              _vm._v("Interest Savings")
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "font-weight-bold" }, [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.formatMoney(
+                                    debt.no_payment_plan.total_interest_paid -
+                                      debt.payment_plan.total_interest_paid
                                   )
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "b-collapse",
-                                {
-                                  attrs: {
-                                    id: "accordion2-1",
-                                    accordion: "accordion2"
-                                  }
-                                },
-                                [
-                                  _c("b-card-body", [
-                                    _vm._v(
-                                      "\n                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.\n              "
-                                    )
-                                  ])
-                                ],
-                                1
+                                )
                               )
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      )
-                    : _vm._e()
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col" }, [
+                            _c("div", { staticClass: "text-muted small" }, [
+                              _vm._v("Remaining Payments")
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "font-weight-bold" }, [
+                              _vm._v(_vm._s(_vm.remainingPayments(debt)))
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col" }, [
+                            _c("div", { staticClass: "text-muted small" }, [
+                              _vm._v("Final Payment Date")
+                            ]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "font-weight-bold" }, [
+                              _vm._v(
+                                _vm._s(
+                                  debt.payment_plan.billing_dates.slice(-1)[0][
+                                    "payment_date_formatted"
+                                  ]
+                                )
+                              )
+                            ])
+                          ])
+                        ])
+                      : _vm._e()
+                  ])
                 ],
                 1
               )

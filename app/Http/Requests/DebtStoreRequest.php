@@ -24,7 +24,8 @@ class DebtStoreRequest extends BaseFormRequest
         return [
             'debt.name' => 'required|string|max:128',
             'debt.type' => 'required|string|in:Mortgage,Student Loan,Auto Loan,Credit Card',
-            'debt.balance' => 'required|regex:/^\d*(\.\d{2})$/',
+            'debt.startBalance' => 'required|regex:/^\d*(\.\d{2})$/',
+            'debt.currentBalance' => 'required|regex:/^\d*(\.\d{2})$/',
             'debt.minPayment' => 'required|regex:/^\d*(\.\d{2})$/',
             'debt.startDate' => 'required|date_format:"Y-m-d"',
             'debt.payPeriod' => 'required|string|max:16',
@@ -57,7 +58,8 @@ class DebtStoreRequest extends BaseFormRequest
         return [
             'debt.name' => 'trim|escape|strip_tags',
             'debt.type' => 'trim|escape|strip_tags',
-            'debt.balance' => 'trim|escape|strip_tags',
+            'debt.startBalance' => 'trim|escape|strip_tags',
+            'debt.currentBalance' => 'trim|escape|strip_tags',
             'debt.payPeriod' => 'trim|uppercase',
             'interest.fixed' => 'trim|cast:boolean',
             'lender.name' => 'trim',

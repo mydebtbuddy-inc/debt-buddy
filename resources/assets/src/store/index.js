@@ -75,6 +75,22 @@ export const store = new Vuex.Store({
         addDebt(state, debt) {
             state.user.debts.push(debt)
         },
+        removeDebt(state, debtID) {
+            var debts = state.user.debts.filter((debt) => {
+                return debt.id !== debtID;
+            });
+
+            state.user.debts = debts
+
+            state.user.debts.forEach((debt, index, debts) => {
+                if (plan.payment_plan.individual[debt.id]) {
+                    debts[index]['payment_plan'] = null
+                    debts[index]['no_payment_plan'] = null
+                }
+            })
+
+            state.user.paymentPlan = null
+        },
         clearDebts(state) {
             state.user.debts = []
         },
@@ -84,6 +100,7 @@ export const store = new Vuex.Store({
             state.user.debts.forEach((debt, index, debts) => {
                 if (plan.payment_plan.individual[debt.id]) {
                     debts[index]['payment_plan'] = plan.payment_plan.individual[debt.id]
+                    debts[index]['no_payment_plan'] = plan.no_payment_plan.individual[debt.id]
                 }
             })
         }
@@ -175,6 +192,23 @@ export const store = new Vuex.Store({
                     axios.post('/user/debt', debtData).then(response => {
                         context.commit('addDebt', response.data)
                         resolve(response.data)
+                    })
+                    .catch(error => {
+                        reject(error)
+                    })
+                } else {
+                    reject('User not logged in')
+                }
+            })
+        },
+        removeDebt(context, debtID) {
+            return new Promise((resolve, reject) => {
+                if (context.getters.loggedIn) {
+                    axios.defaults.headers.common['Authorization'] = 'Bearer ' + context.state.token
+
+                    axios.delete('/user/debt/' + debtID).then(response => {
+                        context.commit('removeDebt', response.data.id)
+                        resolve()
                     })
                     .catch(error => {
                         reject(error)

@@ -18,7 +18,7 @@ class CreateDebtsTable extends Migration
             $table->unsignedInteger('user_id')->index();
             $table->string('name', 128);
             $table->enum('type', ['Mortgage', 'Student Loan', 'Auto Loan', 'Credit Card']);
-            $table->enum('status', ['Current', 'Overdue', 'Settled', 'Repaid'])->default('Current');
+            $table->enum('status', ['Current', 'Overdue', 'Settled', 'Repaid', 'Removed'])->default('Current');
             $table->decimal('initial_balance', 12, 2)->nullable();
             $table->decimal('current_balance', 12, 2);
             $table->decimal('minimum_payment', 12, 2);

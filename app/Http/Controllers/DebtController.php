@@ -47,7 +47,7 @@ class DebtController extends Controller
      * @param  \App\Http\Requests\DebtStoreRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(DebtStoreRequest $request)
+    public function addDebt(DebtStoreRequest $request)
     {
         $debtData = $request->validated();
         $debtData['debt']['userID'] = $request->user()->id;
@@ -97,8 +97,10 @@ class DebtController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function removeDebt($id)
     {
-        //
+        $removedDebt = $this->debtService->removeDebtByID($id);
+        
+        return response($removedDebt, 200);
     }
 }

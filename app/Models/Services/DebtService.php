@@ -28,8 +28,8 @@ class DebtService
             'user_id' => $data['debt']['userID'],
             'name' => $data['debt']['name'],
             'type' => $data['debt']['type'],
-            'initial_balance' => $data['debt']['balance'],
-            'current_balance' => $data['debt']['balance'],
+            'initial_balance' => $data['debt']['startBalance'],
+            'current_balance' => $data['debt']['currentBalance'],
             'minimum_payment' => $data['debt']['minPayment'],
             'start_date' => $data['debt']['startDate'],
             'payment_period' => $data['debt']['payPeriod']
@@ -71,15 +71,32 @@ class DebtService
     }
 
     /**
+     * Removes a Debt by ID
+     *
+     * @param  int  $debtID
+     * @return Debt
+     */
+    public static function removeDebtByID($debtID)
+    {
+        $debt = Debt::find($debtID);
+        $debt->status = 'Removed';
+        $debt->save();
+
+        return $debt;
+    }
+
+    /**
      * Creates new debt along with associated interest rate and lender
      *
      * @param  int  $userID
-     * @return Collection debts
+     * @return Collection
      */
     public static function fetchAllUserDebts($userID)
     {
-        return User::find($userID)->debts()->with(
-            ['interestRates', 'lender', 'history']
-        )->get();
+        return User::find($userID)
+            ->debts()
+            ->with(['interestRates', 'lender', 'history'])
+            ->where('status', '!=', 'Removed')
+            ->get();
     }
 }

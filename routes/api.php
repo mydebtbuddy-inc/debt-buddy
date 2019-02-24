@@ -25,7 +25,8 @@ Route::middleware('auth:api')->group(function () {
         });
 
         Route::get('/debt', 'DebtController@index')->name('debt.index');
-        Route::post('/debt', 'DebtController@store')->name('debt.store');
+        Route::post('/debt', 'DebtController@addDebt')->name('debt.store');
+        Route::delete('/debt/{id}', 'DebtController@removeDebt')->name('debt.delete');
 
         Route::post('/payment-plan', 'PaymentPlanController@calculate')->name('paymentPlan.calculate');
     });

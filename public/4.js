@@ -412,14 +412,23 @@ exports.default = {
       var plan = _this.$store.getters.plan;
 
       if (plan) {
-        _this.debtSchedule = plan.payment_plan.combined.billing_dates;
-        _this.debtScheduleOriginal = plan.no_payment_plan.combined.billing_dates;
+        _this.plan.initialBalance = plan.payment_plan.combined.total_initial_debt_balance;
+        _this.plan.currentBalance = plan.payment_plan.combined.total_current_debt_balance;
+        _this.plan.debtSchedule = plan.payment_plan.combined.billing_dates;
+        _this.plan.debtScheduleOriginal = plan.no_payment_plan.combined.billing_dates;
+        _this.plan.debtCelerator = plan.payment_plan.combined.debtcelerator;
         _this.plan.startDate = plan.payment_plan.combined.start_date;
         _this.plan.estimatedEndDate = plan.payment_plan.combined.finish_date;
         _this.plan.interestSaved = plan.no_payment_plan.combined.total_interest_paid - plan.payment_plan.combined.total_interest_paid;
         _this.plan.debtCount = plan.payment_plan.combined.total_debts;
-        _this.plan.totalDebtBalance = plan.payment_plan.combined.total_debt_balance;
+        _this.plan.totalDebtBalance = plan.payment_plan.combined.total_current_debt_balance;
         _this.page.showPaymentPlan = true;
+
+        var today = new Date();
+
+        _this.plan.remainingPayments = plan.payment_plan.combined.billing_dates.filter(function (dates) {
+          return Date.parse(dates.payment_date) > today;
+        }).length;
       }
     }, 500);
   },
@@ -432,8 +441,11 @@ exports.default = {
         showPaymentPlan: false
       },
       plan: {
+        description: '\n      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque magna augue, euismod at tortor et, laoreet maximus risus. Ut neque felis, luctus ut rhoncus id, elementum vitae lorem. Ut ac turpis sit amet lorem volutpat tincidunt. Vestibulum dui sapien, porttitor eget pellentesque id, ultrices id ipsum. Nam augue mi, maximus ut tortor et, fermentum efficitur diam. Suspendisse eget urna lorem. Fusce ligula augue, malesuada ullamcorper est nec, commodo laoreet tellus.</p>\n      <p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque pharetra turpis non aliquet ornare. Duis euismod ultricies est sed auctor. Sed luctus accumsan enim ut efficitur.</p>\n      ',
         debtCount: 0,
         totalDebtBalance: 0.0,
+        initialBalance: 0.0,
+        currentBalance: 0.0,
         debtCelerator: null,
         dateCreated: "TBD",
         estimatedEndDate: "TBD",
@@ -635,8 +647,8 @@ exports.default = {
 
       this.unblockPage();
     },
-    completedPercent: function completedPercent(tasks, completed) {
-      return Math.round(completed / tasks * 100);
+    completedPercent: function completedPercent(total, paid) {
+      return Math.round((total - paid) / total * 100);
     },
     isImage: function isImage(file) {
       return (/\.jpg$|\.png$|\.gif$/i.test(file.name)
@@ -2333,8 +2345,8 @@ var render = function() {
                                   _vm._v(
                                     _vm._s(
                                       _vm.completedPercent(
-                                        _vm.projectData.tasks,
-                                        _vm.projectData.completedTasks
+                                        _vm.plan.initialBalance,
+                                        _vm.plan.currentBalance
                                       )
                                     ) + "%"
                                   )
@@ -2345,13 +2357,8 @@ var render = function() {
                             _vm._v(" "),
                             _c("div", { staticClass: "text-muted small" }, [
                               _vm._v(
-                                _vm._s(
-                                  _vm.projectData.tasks -
-                                    _vm.projectData.completedTasks
-                                ) +
-                                  " opened tasks, " +
-                                  _vm._s(_vm.projectData.completedTasks) +
-                                  " tasks completed"
+                                _vm._s(_vm.plan.remainingPayments) +
+                                  " payments remaining"
                               )
                             ])
                           ]
@@ -2360,8 +2367,8 @@ var render = function() {
                         _c("b-progress", {
                           attrs: {
                             value: _vm.completedPercent(
-                              _vm.projectData.tasks,
-                              _vm.projectData.completedTasks
+                              _vm.plan.initialBalance,
+                              _vm.plan.currentBalance
                             ),
                             height: "4px"
                           }
@@ -2464,9 +2471,7 @@ var render = function() {
                   },
                   [
                     _c("div", {
-                      domProps: {
-                        innerHTML: _vm._s(_vm.projectData.description)
-                      }
+                      domProps: { innerHTML: _vm._s(_vm.plan.description) }
                     })
                   ]
                 ),
@@ -2504,184 +2509,6 @@ var render = function() {
                             })
                           ],
                           1
-                        )
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "b-tab",
-                      { attrs: { title: "Activity" } },
-                      [
-                        _c(
-                          "b-card-body",
-                          _vm._l(_vm.projectData.activities, function(
-                            activity
-                          ) {
-                            return _c(
-                              "div",
-                              {
-                                key:
-                                  activity.type +
-                                  activity.date +
-                                  activity.user.name,
-                                staticClass: "media pb-1 mb-3"
-                              },
-                              [
-                                _c(
-                                  "div",
-                                  { staticClass: "ui-feed-icon-container" },
-                                  [
-                                    activity.type === "new_task"
-                                      ? _c("span", {
-                                          staticClass:
-                                            "ui-icon ui-feed-icon ion ion-md-add bg-primary text-white"
-                                        })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    activity.type === "pushed_commit"
-                                      ? _c("span", {
-                                          staticClass:
-                                            "ui-icon ui-feed-icon ion ion-md-code bg-warning text-dark"
-                                        })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    activity.type === "completed_task"
-                                      ? _c("span", {
-                                          staticClass:
-                                            "ui-icon ui-feed-icon ion ion-md-checkmark bg-success text-white"
-                                        })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    activity.type === "new_participant"
-                                      ? _c("span", {
-                                          staticClass:
-                                            "ui-icon ui-feed-icon ion ion-md-contact bg-info text-white"
-                                        })
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    _c("img", {
-                                      staticClass: "ui-w-40 rounded-circle",
-                                      attrs: {
-                                        src:
-                                          _vm.baseUrl +
-                                          "img/avatars/" +
-                                          activity.user.avatar,
-                                        alt: ""
-                                      }
-                                    })
-                                  ]
-                                ),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  {
-                                    staticClass:
-                                      "media-body align-self-center ml-3"
-                                  },
-                                  [
-                                    activity.type === "new_task"
-                                      ? _c("div", [
-                                          _c(
-                                            "a",
-                                            {
-                                              attrs: {
-                                                href: "javascript:void(0)"
-                                              }
-                                            },
-                                            [_vm._v(_vm._s(activity.user.name))]
-                                          ),
-                                          _vm._v(" added new task "),
-                                          _c("strong", [
-                                            _vm._v(
-                                              _vm._s(activity.data.taskTitle)
-                                            )
-                                          ])
-                                        ])
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    activity.type === "pushed_commit"
-                                      ? _c("div", [
-                                          _c(
-                                            "a",
-                                            {
-                                              attrs: {
-                                                href: "javascript:void(0)"
-                                              }
-                                            },
-                                            [_vm._v(_vm._s(activity.user.name))]
-                                          ),
-                                          _vm._v(" pushed commit "),
-                                          _c("strong", [
-                                            _vm._v(
-                                              "#" +
-                                                _vm._s(activity.data.commitId)
-                                            )
-                                          ])
-                                        ])
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    activity.type === "completed_task"
-                                      ? _c("div", [
-                                          _c(
-                                            "a",
-                                            {
-                                              attrs: {
-                                                href: "javascript:void(0)"
-                                              }
-                                            },
-                                            [_vm._v(_vm._s(activity.user.name))]
-                                          ),
-                                          _vm._v(" completed task "),
-                                          _c("strong", [
-                                            _vm._v(
-                                              _vm._s(activity.data.taskTitle)
-                                            )
-                                          ])
-                                        ])
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    activity.type === "new_participant"
-                                      ? _c("div", [
-                                          _c(
-                                            "a",
-                                            {
-                                              attrs: {
-                                                href: "javascript:void(0)"
-                                              }
-                                            },
-                                            [_vm._v(_vm._s(activity.user.name))]
-                                          ),
-                                          _vm._v(" assigned new participant "),
-                                          _c(
-                                            "a",
-                                            {
-                                              attrs: {
-                                                href: "javascript:void(0)"
-                                              }
-                                            },
-                                            [
-                                              _c("strong", [
-                                                _vm._v(
-                                                  _vm._s(activity.data.userName)
-                                                )
-                                              ])
-                                            ]
-                                          )
-                                        ])
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    _c(
-                                      "div",
-                                      { staticClass: "text-muted small" },
-                                      [_vm._v(_vm._s(activity.date) + " ago")]
-                                    )
-                                  ]
-                                )
-                              ]
-                            )
-                          }),
-                          0
                         )
                       ],
                       1
