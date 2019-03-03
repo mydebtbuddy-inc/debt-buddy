@@ -55709,7 +55709,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _vue2.default.use(_vuex2.default);
 
 //axios.defaults.baseURL = 'http://localhost:8888/api'
-_axios2.default.defaults.baseURL = 'http://http://mydebtbuddy.us-west-1.elasticbeanstalk.com/api';
+_axios2.default.defaults.baseURL = 'http://mydebtbuddy.us-west-1.elasticbeanstalk.com/api';
 
 var state = {
     token: localStorage.getItem('token') || null,

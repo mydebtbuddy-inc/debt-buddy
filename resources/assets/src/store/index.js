@@ -7,7 +7,7 @@ import * as Cookies from 'js-cookie'
 Vue.use(Vuex)
 
 //axios.defaults.baseURL = 'http://localhost:8888/api'
-axios.defaults.baseURL = 'http://http://mydebtbuddy.us-west-1.elasticbeanstalk.com/api'
+axios.defaults.baseURL = 'http://mydebtbuddy.us-west-1.elasticbeanstalk.com/api'
 
 const state = {
     token: localStorage.getItem('token') || null,
