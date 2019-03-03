@@ -55707,7 +55707,9 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _vue2.default.use(_vuex2.default);
-_axios2.default.defaults.baseURL = 'http://localhost:8888/api';
+
+//axios.defaults.baseURL = 'http://localhost:8888/api'
+_axios2.default.defaults.baseURL = 'http://http://mydebtbuddy.us-west-1.elasticbeanstalk.com/api';
 
 var state = {
     token: localStorage.getItem('token') || null,
