@@ -1,5 +1,11 @@
 <?php
 
+if (!file_exists($_SERVER['DOCUMENT_ROOT'] . '/../storage/oauth-private.key')) {
+    echo "Private key does not exist";
+} else if (!is_readable($_SERVER['DOCUMENT_ROOT'] . '/../storage/oauth-private.key')) {
+    echo "Private key is not readable";
+}
+
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
