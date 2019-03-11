@@ -117,6 +117,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
 
 exports.default = {
   name: 'register',
@@ -133,6 +136,7 @@ exports.default = {
         name: '',
         surname: '',
         email: '',
+        confirmation_email: '',
         password: ''
       }
     };
@@ -153,6 +157,12 @@ exports.default = {
         required: _validators.required,
         minLength: (0, _validators.minLength)(4),
         maxLength: (0, _validators.maxLength)(128)
+      },
+      confirmation_email: {
+        required: _validators.required,
+        minLength: (0, _validators.minLength)(4),
+        maxLength: (0, _validators.maxLength)(128),
+        sameAs: (0, _validators.sameAs)('email')
       },
       password: {
         required: _validators.required,
@@ -1003,6 +1013,44 @@ var render = function() {
                                 _vm.$set(_vm.registrant, "email", $$v)
                               },
                               expression: "registrant.email"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-form-group",
+                        { attrs: { label: "Confirm Email" } },
+                        [
+                          _c("b-input", {
+                            on: {
+                              keyup: function($event) {
+                                if (
+                                  !("button" in $event) &&
+                                  _vm._k(
+                                    $event.keyCode,
+                                    "enter",
+                                    13,
+                                    $event.key,
+                                    "Enter"
+                                  )
+                                ) {
+                                  return null
+                                }
+                                _vm.submitForm()
+                              }
+                            },
+                            model: {
+                              value: _vm.registrant.confirmation_email,
+                              callback: function($$v) {
+                                _vm.$set(
+                                  _vm.registrant,
+                                  "confirmation_email",
+                                  $$v
+                                )
+                              },
+                              expression: "registrant.confirmation_email"
                             }
                           })
                         ],

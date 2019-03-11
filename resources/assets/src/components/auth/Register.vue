@@ -49,6 +49,9 @@
                 <b-form-group label="Email">
                   <b-input v-model="registrant.email" @keyup.enter="submitForm()" />
                 </b-form-group>
+                <b-form-group label="Confirm Email">
+                  <b-input v-model="registrant.confirmation_email" @keyup.enter="submitForm()" />
+                </b-form-group>
                 <b-form-group label="Password">
                   <b-input type="password" v-model="registrant.password" @keyup.enter="submitForm()" />
                 </b-form-group>
@@ -98,7 +101,7 @@ a {
 </style>
 
 <script>
-import { required, minLength, maxLength, requiredIf } from 'vuelidate/lib/validators'
+import { required, minLength, maxLength, requiredIf, sameAs } from 'vuelidate/lib/validators'
 import LaddaBtn from '@/vendor/libs/ladda/Ladda'
 
 export default {
@@ -115,6 +118,7 @@ export default {
       name: '',
       surname: '',
       email: '',
+      confirmation_email: '',
       password: ''
     }
   }),
@@ -134,6 +138,12 @@ export default {
         required,
         minLength: minLength(4),
         maxLength: maxLength(128)
+      },
+      confirmation_email: {
+        required,
+        minLength: minLength(4),
+        maxLength: maxLength(128),
+        sameAs: sameAs('email')
       },
       password: {
         required: required,
