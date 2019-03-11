@@ -1,7 +1,7 @@
 <?php
 
 $file_path = $_SERVER['DOCUMENT_ROOT'] . '/../storage';
-var_dump($_SERVER['DOCUMENT_ROOT']);
+
 print_r(scandir($file_path));
 
 if (!file_exists($file_path . '/oauth-private.key')) {
