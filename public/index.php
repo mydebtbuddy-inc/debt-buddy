@@ -1,13 +1,13 @@
 <?php
 
-$file_path = $_SERVER['DOCUMENT_ROOT'] . '/../storage/oauth-private.key';
+$file_path = $_SERVER['DOCUMENT_ROOT'] . '/../storage';
 
-if (!file_exists($file_path)) {
+print_r(scandir($file_path));
+
+if (!file_exists($file_path . '/oauth-private.key')) {
     echo "Private key does not exist<br />";
-    print_r(scandir($file_path));
 } else if (!is_readable($file_path)) {
     echo "Private key is not readable<br />";
-    print_r(scandir($file_path));
 }
 
 /**
