@@ -1,15 +1,5 @@
 <?php
 
-$file_path = '/etc/keys';
-var_dump($_SERVER['DOCUMENT_ROOT']);
-print_r(scandir($file_path));
-
-if (!file_exists($file_path . '/oauth-private.key')) {
-    echo "Private key does not exist<br />";
-} else if (!is_readable($file_path)) {
-    echo "Private key is not readable<br />";
-}
-
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
