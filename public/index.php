@@ -1,6 +1,6 @@
 <?php
 
-$file_path = $_SERVER['DOCUMENT_ROOT'] . '/../storage';
+$file_path = '/etc/keys';
 var_dump($_SERVER['DOCUMENT_ROOT']);
 print_r(scandir($file_path));
 
