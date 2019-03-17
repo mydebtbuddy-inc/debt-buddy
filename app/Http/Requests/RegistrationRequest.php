@@ -26,7 +26,7 @@ class RegistrationRequest extends FormRequest
         return [
             'name' => 'trim|escape|strip_tags',
             'surname' => 'trim|escape|strip_tags',
-            'email' => 'trim|escape|strip_tags|lowercase',
+            'email' => 'trim|escape|strip_tags|lowercase|confirmed',
             'password' => 'trim'
         ];
     }

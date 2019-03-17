@@ -136,7 +136,7 @@ exports.default = {
         name: '',
         surname: '',
         email: '',
-        confirmation_email: '',
+        email_confirmation: '',
         password: ''
       }
     };
@@ -154,6 +154,11 @@ exports.default = {
         maxLength: (0, _validators.maxLength)(64)
       },
       email: {
+        required: _validators.required,
+        minLength: (0, _validators.minLength)(4),
+        maxLength: (0, _validators.maxLength)(128)
+      },
+      email_confirmation: {
         required: _validators.required,
         minLength: (0, _validators.minLength)(4),
         maxLength: (0, _validators.maxLength)(128)
@@ -183,6 +188,7 @@ exports.default = {
         name: this.registrant.name,
         surname: this.registrant.surname,
         email: this.registrant.email,
+        email_confirmation: this.registrant.email_confirmation,
         password: this.registrant.password
       }).then(function (response) {
         _this.$router.push({ name: 'login' });
@@ -1042,15 +1048,15 @@ var render = function() {
                               }
                             },
                             model: {
-                              value: _vm.registrant.confirmation_email,
+                              value: _vm.registrant.email_confirmation,
                               callback: function($$v) {
                                 _vm.$set(
                                   _vm.registrant,
-                                  "confirmation_email",
+                                  "email_confirmation",
                                   $$v
                                 )
                               },
-                              expression: "registrant.confirmation_email"
+                              expression: "registrant.email_confirmation"
                             }
                           })
                         ],
@@ -1184,7 +1190,11 @@ var staticRenderFns = [
         '\n                By clicking "Register", you agree to our\n                '
       ),
       _c("a", { attrs: { href: "javascript:void(0)" } }, [
-        _vm._v("terms of service and privacy policy")
+        _vm._v("terms of service")
+      ]),
+      _vm._v(" and "),
+      _c("a", { attrs: { href: "javascript:void(0)" } }, [
+        _vm._v("privacy policy")
       ]),
       _vm._v(
         ". We’ll occasionally send you account-related emails.\n              "

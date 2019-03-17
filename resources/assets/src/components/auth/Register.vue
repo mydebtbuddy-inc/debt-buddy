@@ -50,7 +50,7 @@
                   <b-input v-model="registrant.email" @keyup.enter="submitForm()" />
                 </b-form-group>
                 <b-form-group label="Confirm Email">
-                  <b-input v-model="registrant.confirmation_email" @keyup.enter="submitForm()" />
+                  <b-input v-model="registrant.email_confirmation" @keyup.enter="submitForm()" />
                 </b-form-group>
                 <b-form-group label="Password">
                   <b-input type="password" v-model="registrant.password" @keyup.enter="submitForm()" />
@@ -66,7 +66,7 @@
                   </ladda-btn>
                 <div class="text-light small mt-4">
                   By clicking "Register", you agree to our
-                  <a href="javascript:void(0)">terms of service and privacy policy</a>. We’ll occasionally send you account-related emails.
+                  <a href="javascript:void(0)">terms of service</a> and <a href="javascript:void(0)">privacy policy</a>. We’ll occasionally send you account-related emails.
                 </div>
               </form>
               <!-- / Form -->
@@ -118,7 +118,7 @@ export default {
       name: '',
       surname: '',
       email: '',
-      confirmation_email: '',
+      email_confirmation: '',
       password: ''
     }
   }),
@@ -135,6 +135,11 @@ export default {
         maxLength: maxLength(64)
       },
       email: {
+        required,
+        minLength: minLength(4),
+        maxLength: maxLength(128)
+      },
+      email_confirmation: {
         required,
         minLength: minLength(4),
         maxLength: maxLength(128)
@@ -162,6 +167,7 @@ export default {
         name: this.registrant.name,
         surname: this.registrant.surname,
         email: this.registrant.email,
+        email_confirmation: this.registrant.email_confirmation,
         password: this.registrant.password
       })
       .then(response => {
