@@ -30,6 +30,8 @@ class AuthServiceProvider extends ServiceProvider
         
         Passport::routes(function($router) {
             $router->forAccessTokens();
-        });
+        }, [ 
+            'middleware' => [ \App\Http\Middleware\Cors::class ] 
+        ]);
     }
 }
